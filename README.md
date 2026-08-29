@@ -192,7 +192,7 @@ All sensor-level datasets are expected to contain the common temporal fields `GL
 * Every one of the 494 inventoried lakes has **exactly 132 monthly rows** (Jan 2015–Dec 2025) — zero lakes have incomplete month coverage at the row level.
 * No duplicate `(GL_ID, date)` pairs were found in any of the five sensor inputs or in the merged output.
 
-This row-level completeness does **not** mean every cell has a valid measurement — see missingness figures below. A complete row means a lake-month slot exists; individual sensor fields within that row can still be null due to cloud cover, sensor gaps, or acquisition timing. Missing records may result from cloud contamination, sensor availability, acquisition frequency, quality filtering, spatial coverage, processing failures, or temporal differences between sensors — treat the dataset as a **partially observed environmental time series**, not a fully imputed one.
+This row-level completeness does **not** mean every cell has a valid measurement, see missingness figures below. A complete row means a lake-month slot exists; individual sensor fields within that row can still be null due to cloud cover, sensor gaps, or acquisition timing. Missing records may result from cloud contamination, sensor availability, acquisition frequency, quality filtering, spatial coverage, processing failures, or temporal differences between sensors — treat the dataset as a **partially observed environmental time series**, not a fully imputed one.
 
 ---
 
@@ -311,7 +311,7 @@ A non-zero `S2_observations` does not guarantee a non-null `S2_NDWI_mean`. Treat
 Some autocorrelation visualizations use local interpolation purely for plot readability; the underlying dataset is not imputed.
 
 ## 3. No Validated Hazard Model Yet
-Any anomaly-style signal in the current EDA (e.g., water-area variability rankings) is exploratory only — it is **not** a validated hazard indicator, flood prediction model, GLOF prediction system, or statistically validated anomaly detector. That is the explicit purpose of the not-yet-built LSTM Autoencoder stage.
+Any anomaly-style signal in the current EDA (e.g., water-area variability rankings) is exploratory only and it is **not** a validated hazard indicator, flood prediction model, GLOF prediction system, or statistically validated anomaly detector. That is the explicit purpose of the not-yet-built LSTM Autoencoder stage.
 
 ## 4. Sentinel-1 Quality Checks
 Some VV/VH values fall outside the broad `[-30, 5] dB` check range. EDA attributes most out-of-range values to real physical causes (wind, partial ice cover, acquisition angle) rather than sensor error, and recommends **sensor-specific physical checks** rather than a single blanket statistical outlier rule for Stage 1 preprocessing.
@@ -372,7 +372,7 @@ Per the CT-707 report's two-phase remaining work plan:
 
 # Known Inconsistencies to Verify
 
-Flagged during this README correction pass — not yet resolved, should be checked against the actual codebase before relying on them:
+Flagged during this README correction pass, not yet resolved, should be checked against the actual codebase before relying on them:
 
 1. **GPM join key naming.** The CT-707 report's Table 4.1 lists `gpm_master_merged.csv`'s key output column as `Id`, while every other sensor table and the documented merge logic use `GL_ID`. Since the final merge reportedly passed all duplicate/key validation checks with zero errors, this is likely just an aliasing/rename step during merge (or a typo in the report table) rather than a live bug — but it should be confirmed directly against `merge-master.py` rather than assumed.
 2. **ERA5/GPM spatial extraction method.** The originally *proposed* methodology (CT-707 §3.1.2) states ERA5 and GPM are "spatially averaged over a 5 km buffer around each lake centroid." The *actual implementation* described in §4.1.4 instead uses a first-value reducer sampled directly at the lake centroid point for ERA5 (buffer averaging is used for GPM and MODIS LST, not ERA5). Documentation describing ERA5 extraction should say "centroid point sample," not "5 km buffer average."
